@@ -1,0 +1,3 @@
+source,final_err_m,rms_err_m,final_yaw_err_deg,path_m,turn_true_deg,turn_wheels_deg,chi_eff
+raw,1.1598,0.8492,164.36,12.603,1282.1,1086.4,1.444
+ekf,0.1348,0.0800,9.93,12.603,1282.1,1086.4,1.444

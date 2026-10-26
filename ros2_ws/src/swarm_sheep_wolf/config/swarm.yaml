@@ -1,0 +1,18 @@
+# Parametros del algoritmo ovejas-lobo (mismos valores que python/params.py)
+/**:
+  ros__parameters:
+    r_sep: 0.45
+    r_nb: 1.00
+    r_fear: 1.20
+    w_sep: 3.0
+    w_coh: 0.6
+    w_ali: 0.4
+    w_flee: 2.0
+    w_wall: 2.0
+    v_sheep: 0.20
+    v_wolf: 0.25
+    k_heading: 2.5
+    arena: 4.0
+    goal: [1.2, 1.2]
+    goal_r: 0.6
+    rate_hz: 20.0

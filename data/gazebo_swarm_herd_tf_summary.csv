@@ -1,0 +1,2 @@
+duration_s,t_goal_s,collisions,mean_cohesion_m,min_dist_m,mean_polarization,final_odom_err_m,max_odom_err_m,hold_frac,hold_s,turn_rate_dps
+130.1,43.8,0,0.34597910906298,0.2645,0.7019337941628265,0.1095,0.1186,1.0,60.0,4.350159460202655

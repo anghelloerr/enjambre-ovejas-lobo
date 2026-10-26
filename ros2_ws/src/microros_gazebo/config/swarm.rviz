@@ -1,0 +1,140 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Reference Frame: world
+      Cell Size: 0.5
+      Plane Cell Count: 8
+      Enabled: true
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Show Names: false
+      Marker Scale: 0.3
+    - Class: rviz_default_plugins/RobotModel
+      Name: sheep1
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /sheep1/robot_description
+    - Class: rviz_default_plugins/Odometry
+      Name: sheep1 odom (EKF)
+      Enabled: true
+      Topic:
+        Value: /sheep1/odom
+      Keep: 50
+      Shape:
+        Value: Arrow
+        Shaft Length: 0.12
+        Shaft Radius: 0.008
+        Head Length: 0.04
+        Head Radius: 0.02
+      Color: 31; 119; 180
+    - Class: rviz_default_plugins/RobotModel
+      Name: sheep2
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /sheep2/robot_description
+    - Class: rviz_default_plugins/Odometry
+      Name: sheep2 odom (EKF)
+      Enabled: true
+      Topic:
+        Value: /sheep2/odom
+      Keep: 50
+      Shape:
+        Value: Arrow
+        Shaft Length: 0.12
+        Shaft Radius: 0.008
+        Head Length: 0.04
+        Head Radius: 0.02
+      Color: 31; 119; 180
+    - Class: rviz_default_plugins/RobotModel
+      Name: sheep3
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /sheep3/robot_description
+    - Class: rviz_default_plugins/Odometry
+      Name: sheep3 odom (EKF)
+      Enabled: true
+      Topic:
+        Value: /sheep3/odom
+      Keep: 50
+      Shape:
+        Value: Arrow
+        Shaft Length: 0.12
+        Shaft Radius: 0.008
+        Head Length: 0.04
+        Head Radius: 0.02
+      Color: 31; 119; 180
+    - Class: rviz_default_plugins/RobotModel
+      Name: sheep4
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /sheep4/robot_description
+    - Class: rviz_default_plugins/Odometry
+      Name: sheep4 odom (EKF)
+      Enabled: true
+      Topic:
+        Value: /sheep4/odom
+      Keep: 50
+      Shape:
+        Value: Arrow
+        Shaft Length: 0.12
+        Shaft Radius: 0.008
+        Head Length: 0.04
+        Head Radius: 0.02
+      Color: 31; 119; 180
+    - Class: rviz_default_plugins/RobotModel
+      Name: sheep5
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /sheep5/robot_description
+    - Class: rviz_default_plugins/Odometry
+      Name: sheep5 odom (EKF)
+      Enabled: true
+      Topic:
+        Value: /sheep5/odom
+      Keep: 50
+      Shape:
+        Value: Arrow
+        Shaft Length: 0.12
+        Shaft Radius: 0.008
+        Head Length: 0.04
+        Head Radius: 0.02
+      Color: 31; 119; 180
+    - Class: rviz_default_plugins/RobotModel
+      Name: wolf
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /wolf/robot_description
+    - Class: rviz_default_plugins/Odometry
+      Name: wolf odom (EKF)
+      Enabled: true
+      Topic:
+        Value: /wolf/odom
+      Keep: 50
+      Shape:
+        Value: Arrow
+        Shaft Length: 0.12
+        Shaft Radius: 0.008
+        Head Length: 0.04
+        Head Radius: 0.02
+      Color: 255; 25; 0
+  Global Options:
+    Fixed Frame: world
+    Background Color: 48; 48; 48
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Scale: 150
+      X: 0
+      Y: 0

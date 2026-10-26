@@ -1,0 +1,8 @@
+escenario percep. |   exito | t medio [s] | colis/ensayo | cohesion [m] | d_min [m] | err odo [m] | contencion | giro [o/s]
+    flock   truth |     n/a |    nan± nan |         0.00 |        0.320 |     0.356 |       0.001 |        nan |        5.9
+    flock    odom |     n/a |    nan± nan |         0.00 |        0.321 |     0.356 |       0.001 |        nan |        6.9
+     herd   truth |   100 % |   43.9± 3.4 |         0.00 |        0.353 |     0.287 |       0.012 |      0.999 |       30.3
+     herd    odom |   100 % |   47.5± 2.4 |         0.00 |        0.359 |     0.288 |       0.013 |      0.978 |       43.4
+     hunt   truth |   100 % |   10.3± 0.8 |         0.00 |        0.381 |     0.216 |       0.003 |        nan |       39.3
+     hunt    odom |   100 % |   10.2± 0.7 |         0.00 |        0.381 |     0.216 |       0.004 |        nan |       41.3
+PYDONE

@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<!--
+  Gemelo digital del Yahboom MicroROS-Pi5 para Gazebo Fortress (Ignition Gazebo 6).
+
+  Base: yahboomcar_description/urdf/MicroROS.urdf (exportado de SolidWorks por Yahboom).
+  Cambios respecto al original (ver docs/02_gemelo_digital.md):
+    * prefijo por robot (robot1/, robot2/...) para el enjambre
+    * link base_footprint en el suelo
+    * colisiones simplificadas (caja + cilindros): las mallas STL se usan solo como visual
+    * masas e inercias realistas (el URDF original suma 0.36 kg)
+    * plugins de Gazebo: traccion diferencial 4WD, IMU, LiDAR MS200, joint states y ground truth
+    * mismos topicos que el firmware del ESP32: cmd_vel, odom_raw, imu, scan
+-->
+<robot name="microros" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="prefix" default=""/>
+  <xacro:arg name="ns" default=""/>
+  <xacro:arg name="color" default="1 1 1 1"/>
+  <xacro:arg name="use_lidar" default="true"/>
+  <!-- Friccion de la rueda. Con friccion isotropa (mu_long = mu_lat) el giro en el sitio
+       da chi = 1.52 en Gazebo, igual a la teoria 1 + (L/W)^2 = 1.50 (docs/05_odometria.md).
+       Con mu_lat < mu_long DART aplica la anisotropia en una direccion no ligada a la rueda
+       y el robot casi no gira (chi ~ 5), por eso se deja isotropa. -->
+  <xacro:arg name="mu_lat" default="1.0"/>
+  <xacro:arg name="mu_long" default="1.0"/>
+  <xacro:property name="p" value="$(arg prefix)"/>
+  <xacro:property name="ns" value="$(arg ns)"/>
+  <xacro:property name="t" value="${'/' + ns + '/' if ns else '/'}"/>
+
+  <!-- Parametros (docs/01_parametros.md) -->
+  <xacro:property name="wheel_r" value="0.024"/>
+  <xacro:property name="wheel_w" value="0.0215"/>
+  <xacro:property name="axle_z" value="-0.02125"/>
+  <xacro:property name="base_z" value="${wheel_r - axle_z}"/>
+  <xacro:property name="x_front" value="0.0455"/>
+  <xacro:property name="x_rear" value="-0.0495"/>
+  <xacro:property name="y_half" value="0.0675"/>
+  <xacro:property name="apb" value="0.115"/>
+  <xacro:property name="m_body" value="1.18"/>
+  <xacro:property name="m_wheel" value="0.030"/>
+  <xacro:property name="body_l" value="0.165"/>
+  <xacro:property name="body_w" value="0.105"/>
+  <xacro:property name="body_h" value="0.060"/>
+  <xacro:property name="mesh" value="package://microros_description/meshes"/>
+
+  <material name="body_color"><color rgba="$(arg color)"/></material>
+  <material name="tyre"><color rgba="0.15 0.15 0.15 1"/></material>
+  <material name="dark"><color rgba="0.2 0.2 0.2 1"/></material>
+
+  <link name="${p}base_footprint"/>
+
+  <joint name="${p}base_joint" type="fixed">
+    <parent link="${p}base_footprint"/>
+    <child link="${p}base_link"/>
+    <origin xyz="0 0 ${base_z}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="${p}base_link">
+    <visual>
+      <geometry><mesh filename="${mesh}/base_link.STL"/></geometry>
+      <material name="body_color"/>
+    </visual>
+    <collision>
+      <origin xyz="0.002 0 0.004" rpy="0 0 0"/>
+      <geometry><box size="${body_l} ${body_w} ${body_h}"/></geometry>
+    </collision>
+    <inertial>
+      <origin xyz="-0.004 0 0.005" rpy="0 0 0"/>
+      <mass value="${m_body}"/>
+      <inertia ixx="${m_body*(body_w**2+body_h**2)/12}" ixy="0" ixz="0"
+               iyy="${m_body*(body_l**2+body_h**2)/12}" iyz="0"
+               izz="${m_body*(body_l**2+body_w**2)/12}"/>
+    </inertial>
+  </link>
+
+  <!-- Rueda: nombre Yahboom (zq/yq/zh/yh), posicion x, lado (+1 izq, -1 der) -->
+  <xacro:macro name="wheel" params="name x side">
+    <link name="${p}${name}_Link">
+      <visual>
+        <geometry><mesh filename="${mesh}/${name}_Link.STL"/></geometry>
+        <material name="tyre"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry><cylinder radius="${wheel_r}" length="${wheel_w}"/></geometry>
+      </collision>
+      <inertial>
+        <mass value="${m_wheel}"/>
+        <inertia ixx="${m_wheel*(3*wheel_r**2+wheel_w**2)/12}" ixy="0" ixz="0"
+                 iyy="${m_wheel*wheel_r**2/2}" iyz="0"
+                 izz="${m_wheel*(3*wheel_r**2+wheel_w**2)/12}"/>
+      </inertial>
+    </link>
+    <joint name="${p}${name}_Joint" type="continuous">
+      <parent link="${p}base_link"/>
+      <child link="${p}${name}_Link"/>
+      <origin xyz="${x} ${side*y_half} ${axle_z}" rpy="0 0 0"/>
+      <!-- En el URDF de Yahboom las ruedas derechas usan eje (0 -1 0) porque el ESP32
+           invierte el signo; DiffDrive de Gazebo necesita que +giro = avance en ambos lados. -->
+      <axis xyz="0 1 0"/>
+      <dynamics damping="0.0005" friction="0.0"/>
+    </joint>
+    <gazebo reference="${p}${name}_Link">
+      <mu1>$(arg mu_long)</mu1>
+      <mu2>$(arg mu_lat)</mu2>
+      <kp>1e6</kp>
+      <kd>10</kd>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:wheel name="zq" x="${x_front}" side="1"/>
+  <xacro:wheel name="zh" x="${x_rear}"  side="1"/>
+  <xacro:wheel name="yq" x="${x_front}" side="-1"/>
+  <xacro:wheel name="yh" x="${x_rear}"  side="-1"/>
+
+  <!-- IMU (misma pose que la TF estatica de yahboomcar_bringup) -->
+  <link name="${p}imu_frame">
+    <visual>
+      <geometry><mesh filename="${mesh}/imu_Link.STL"/></geometry>
+      <material name="dark"/>
+    </visual>
+  </link>
+  <joint name="${p}imu_joint" type="fixed">
+    <parent link="${p}base_link"/>
+    <child link="${p}imu_frame"/>
+    <origin xyz="-0.002999 -0.0030001 0.031701" rpy="0 0 0"/>
+  </joint>
+
+  <!-- LiDAR MS200 -->
+  <link name="${p}laser_frame">
+    <visual>
+      <geometry><mesh filename="${mesh}/radar_Link.STL"/></geometry>
+      <material name="dark"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.0165"/>
+      <geometry><cylinder radius="0.019" length="0.033"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.04"/>
+      <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+    </inertial>
+  </link>
+  <joint name="${p}laser_joint" type="fixed">
+    <parent link="${p}base_link"/>
+    <child link="${p}laser_frame"/>
+    <origin xyz="0 0 0.078933557468359" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Gimbal de camara (2 GDL, fijo en la simulacion) -->
+  <link name="${p}jq1_Link">
+    <visual><geometry><mesh filename="${mesh}/jq1_Link.STL"/></geometry><material name="dark"/></visual>
+  </link>
+  <joint name="${p}jq1_Joint" type="fixed">
+    <parent link="${p}base_link"/>
+    <child link="${p}jq1_Link"/>
+    <origin xyz="0.064 0 0.014" rpy="0 0 0"/>
+  </joint>
+  <link name="${p}jq2_Link">
+    <visual><geometry><mesh filename="${mesh}/jq2_Link.STL"/></geometry><material name="dark"/></visual>
+  </link>
+  <joint name="${p}jq2_Joint" type="fixed">
+    <parent link="${p}jq1_Link"/>
+    <child link="${p}jq2_Link"/>
+    <origin xyz="0.016864 8.4892E-05 0.023959" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ===================== Gazebo Fortress ===================== -->
+  <gazebo>
+    <!-- 4WD como diferencial: wheel_separation = 2*ROBOT_APB, igual que el firmware -->
+    <plugin filename="ignition-gazebo-diff-drive-system" name="ignition::gazebo::systems::DiffDrive">
+      <left_joint>${p}zq_Joint</left_joint>
+      <left_joint>${p}zh_Joint</left_joint>
+      <right_joint>${p}yq_Joint</right_joint>
+      <right_joint>${p}yh_Joint</right_joint>
+      <wheel_separation>${2*apb}</wheel_separation>
+      <wheel_radius>${wheel_r}</wheel_radius>
+      <odom_publish_frequency>50</odom_publish_frequency>
+      <max_linear_acceleration>3.0</max_linear_acceleration>
+      <min_linear_acceleration>-3.0</min_linear_acceleration>
+      <max_angular_acceleration>30</max_angular_acceleration>
+      <min_angular_acceleration>-30</min_angular_acceleration>
+      <max_linear_velocity>1.0</max_linear_velocity>
+      <min_linear_velocity>-1.0</min_linear_velocity>
+      <max_angular_velocity>5.0</max_angular_velocity>
+      <min_angular_velocity>-5.0</min_angular_velocity>
+      <topic>${t}cmd_vel</topic>
+      <odom_topic>${t}odom_raw</odom_topic>
+      <tf_topic>${t}tf_diffdrive</tf_topic>
+      <frame_id>${p}odom</frame_id>
+      <child_frame_id>${p}base_footprint</child_frame_id>
+    </plugin>
+
+    <plugin filename="ignition-gazebo-joint-state-publisher-system"
+            name="ignition::gazebo::systems::JointStatePublisher">
+      <topic>${t}joint_states</topic>
+    </plugin>
+
+    <!-- Ground truth para evaluar la odometria (no existe en el robot real) -->
+    <plugin filename="ignition-gazebo-odometry-publisher-system"
+            name="ignition::gazebo::systems::OdometryPublisher">
+      <odom_frame>world</odom_frame>
+      <robot_base_frame>${p}base_footprint</robot_base_frame>
+      <odom_topic>${t}ground_truth</odom_topic>
+      <dimensions>2</dimensions>
+      <odom_publish_frequency>50</odom_publish_frequency>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="${p}imu_frame">
+    <sensor name="imu" type="imu">
+      <always_on>1</always_on>
+      <update_rate>100</update_rate>
+      <topic>${t}imu</topic>
+      <ignition_frame_id>${p}imu_frame</ignition_frame_id>
+      <imu>
+        <angular_velocity>
+          <z><noise type="gaussian"><mean>0</mean><stddev>0.005</stddev>
+            <bias_mean>0.002</bias_mean><bias_stddev>0.0005</bias_stddev></noise></z>
+        </angular_velocity>
+        <linear_acceleration>
+          <x><noise type="gaussian"><mean>0</mean><stddev>0.05</stddev></noise></x>
+          <y><noise type="gaussian"><mean>0</mean><stddev>0.05</stddev></noise></y>
+        </linear_acceleration>
+      </imu>
+    </sensor>
+  </gazebo>
+
+  <xacro:if value="$(arg use_lidar)">
+    <gazebo reference="${p}laser_frame">
+      <sensor name="ms200" type="gpu_lidar">
+        <always_on>1</always_on>
+        <update_rate>10</update_rate>
+        <topic>${t}scan</topic>
+        <ignition_frame_id>${p}laser_frame</ignition_frame_id>
+        <lidar>
+          <scan><horizontal><samples>360</samples><resolution>1</resolution>
+            <min_angle>-3.14159</min_angle><max_angle>3.14159</max_angle></horizontal></scan>
+          <range><min>0.03</min><max>12.0</max><resolution>0.01</resolution></range>
+          <noise><type>gaussian</type><mean>0</mean><stddev>0.01</stddev></noise>
+        </lidar>
+      </sensor>
+    </gazebo>
+  </xacro:if>
+</robot>

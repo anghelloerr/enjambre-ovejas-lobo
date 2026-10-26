@@ -1,0 +1,17 @@
+# Parametros del Yahboom MicroROS-Pi5 (espejo de matlab/params_microros.m y python/params.py)
+# [URDF] MicroROS.urdf  [FW] firmware/tutoriales ESP32  [MESH] mallas STL  [SUP] supuesto a verificar
+geometry:
+  wheelbase_L: 0.095        # [URDF]
+  track_W: 0.135            # [URDF]
+  robot_apb: 0.115          # [FW] ROBOT_APB = A + B
+  wheel_radius: 0.024       # [MESH] verificar con regla
+motor:
+  gear_ratio: 20            # [FW]
+  encoder_lines: 13         # [FW]
+  counts_per_rev: 1040      # [FW]
+  pid_period_s: 0.010       # [FW]
+  pid_default: {kp: 1.0, ki: 0.2, kd: 0.2}   # [FW] PID incremental
+limits:
+  wheel_speed_max: 1.0      # [FW] m/s
+  angular_speed_max: 5.0    # [FW] rad/s
+mass_total_kg: 1.30         # [SUP] pesar el robot

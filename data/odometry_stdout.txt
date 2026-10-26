@@ -1,0 +1,10 @@
+Calibracion: scale_lin=1.0004  scale_ang=1.0992  (teorico chi_fw/chi = 1.0992)
+
+Cuadrado 1 m x 3 vueltas (12 m), 20 semillas, chi_real=1.55 (sd relativa 0.04)
+estimador |   err pos [m] media±sd |   err yaw [deg] media±sd
+        E |     0.940 ±  0.299      |     106.11 ±  48.04
+       Ec |     0.484 ±  0.298      |      49.91 ±  32.76
+       EG |     0.110 ±  0.006      |       9.86 ±   0.32
+      EKF |     0.016 ±  0.010      |       1.46 ±   0.91
+
+Figuras guardadas en docs/figures/

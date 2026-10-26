@@ -1,0 +1,16 @@
+# ROS 2
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+# MATLAB / Simulink (los modelos se generan por script)
+*.slx
+*.slxc
+*.asv
+slprj/
+*.mat
+# Octave
+octave-workspace

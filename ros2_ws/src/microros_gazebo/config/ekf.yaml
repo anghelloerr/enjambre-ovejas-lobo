@@ -1,0 +1,30 @@
+# robot_localization para cada MicroROS-Pi5 simulado.
+# Basado en yahboomcar_multi/param/ekf_robotN.yaml (Yahboom), con dos cambios:
+#   1. de odom_raw solo se fusiona vx: en un skid-steer la velocidad angular de
+#      las ruedas esta sesgada por el derrape (ver docs/05_odometria.md), y la pose
+#      integrada no aporta informacion nueva.
+#   2. de la IMU solo se usa vyaw (giroscopo): sin magnetometro el yaw absoluto
+#      de Madgwick no es observable.
+# Los nombres de marcos y topicos se fijan desde sim.launch.py para cada robot.
+/**:
+  ros__parameters:
+    use_sim_time: true
+    frequency: 50.0
+    sensor_timeout: 0.1
+    two_d_mode: true
+    publish_tf: true
+    odom0_config: [false, false, false,
+                   false, false, false,
+                   true,  true,  false,
+                   false, false, false,
+                   false, false, false]
+    odom0_differential: false
+    odom0_queue_size: 10
+    imu0_config: [false, false, false,
+                  false, false, false,
+                  false, false, false,
+                  false, false, true,
+                  false, false, false]
+    imu0_differential: false
+    imu0_queue_size: 10
+    imu0_remove_gravitational_acceleration: true
