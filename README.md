@@ -4,7 +4,13 @@ Gemelo digital del robot **Yahboom MicroROS-Pi5** (Raspberry Pi 5 + ESP32 micro-
 
 ![Gazebo: pastoreo](docs/figures/gazebo_herd.gif)
 
-> **Estado del proyecto.** Este repositorio es una **reconstrucción** del Proyecto 07 a partir de la documentación y el código oficiales de Yahboom. Todos los resultados son de **simulación** (Python, MATLAB/Octave y Gazebo). Aún no hay medidas en los robots físicos. Los parámetros marcados como supuestos están listados en [docs/01_parametros.md](docs/01_parametros.md).
+> **Estado del proyecto.** Proyecto 07 de Anghello Rodríguez (ESAN R&D Labs), con la flota de robots Yahboom MicroROS-Pi5 del laboratorio. El gemelo digital, los cálculos y el algoritmo se reconstruyeron en octubre de 2026 a partir de la documentación y el código oficiales de Yahboom. Todos los resultados de este repositorio son de **simulación** (Python, MATLAB/Octave y Gazebo); aún no hay medidas en los robots físicos. Los parámetros supuestos están listados en [docs/01_parametros.md](docs/01_parametros.md).
+
+## Plataforma física
+
+![Flota Yahboom MicroROS-Pi5 en el laboratorio](docs/figures/laboratorio_flota_microros.jpg)
+
+Flota Yahboom MicroROS-Pi5 en el laboratorio. La fotografía documenta la plataforma de referencia; no muestra un ensayo del algoritmo.
 
 ## Resultados principales
 
